@@ -1,0 +1,37 @@
+
+toggle(){
+	if [ -z "$(xdotool search --class stalonetray)" ]
+	then
+		stalonetray -d none --window-type toolbar -bg "#111111" &
+		xdotool windowmove "$(xdotool search --class stalonetray)" 1845 34
+		xprop -id $(xdotool search --class stalonetray) -f _MOTIF_WM_HINTS 32c -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0r0r"
+	else
+		if [ -z "$(xdotool search --onlyvisible --class stalonetray)" ]
+		then
+			xdotool windowmap "$(xdotool search --class stalonetray)"
+			xdotool windowmove "$(xdotool search --class stalonetray)" 1845 34
+			xprop -id $(xdotool search --class stalonetray) -f _MOTIF_WM_HINTS 32c -set _MOTIF_WM_HINTS "0x2, 0x0, 0x0, 0x0, 0r0r"
+		else
+			xdotool windowunmap "$(xdotool search --class stalonetray)"
+		fi
+	fi
+	polybar-msg action "#systembar.hook.0"
+}
+
+display(){
+        if [ -z "$(xdotool search --onlyvisible --class stalonetray)" ]
+        then
+                echo ""
+        else
+                echo ""
+	fi
+}
+
+case "$1" in
+	--toggle)
+		toggle
+		;;
+	*)
+		display
+		;;
+esac

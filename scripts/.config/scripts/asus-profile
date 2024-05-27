@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [[ $1 == "--get" ]]; then
+	profile=$(asusctl profile -p | sed -n "s/^.*\s//p")
+	if [[ $profile == "Performance" ]];then
+		echo ""
+	elif [[ $profile == "Quiet" ]];then
+		echo ""
+	elif [[ $profile == "Balanced" ]];then
+		echo ""
+	fi
+else 	
+	asusctl profile -n
+	polybar-msg action "#profile.hook.0"
+fi

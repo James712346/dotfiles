@@ -1,0 +1,93 @@
+#!/bin/sh
+
+update_sink() {
+    sink=$(pactl info | awk -F : '/Default Sink:/{print $2}')
+}
+
+volume_up() {
+    update_sink
+    muted=$(amixer get Master | tail -2 | grep -c '\[on\]')
+    if [ $muted -eq 0 ]; then
+	    pactl set-sink-mute $sink 0
+    fi
+    volume=$(awk -F"[][]" '/Left:/ { print $2 }' <(amixer sget Master) | sed 's/%//' | head -n 1)
+    if [[ "$volume" -lt 100 ]]; then
+    	pactl set-sink-volume $sink +1%
+    fi
+}
+
+volume_down() {
+    update_sink
+    muted=$(amixer get Master | tail -2 | grep -c '\[on\]')
+    if [ $muted -eq 0 ]; then
+	    pactl set-sink-mute $sink 0
+    fi
+    pactl set-sink-volume $sink -1%
+}
+
+volume_mute() {
+    update_sink
+    pactl set-sink-mute $sink toggle
+}
+
+volume_print() {
+    update_sink
+
+    active_port=$(pactl list sinks)
+    if echo "$active_port" | grep "Active Port:"| grep -q "headphone"; then
+        icon="%{F#F0C674}%{F-}"
+    elif echo "$active_port" | grep -q "Active Port: hdmi"; then
+        icon="%{F#F0C674}%{F-}"
+    else
+        icon="%{F#F0C674}%{F-}"
+    fi
+
+    muted=$(amixer get Master | tail -2 | grep -c '\[on\]')
+
+    if [ $muted -eq 0 ]; then
+	    icon=""
+	    volume="--%"
+    else
+	    volume=$(awk -F"[][]" '/Left:/ { print $2 }' <(amixer sget Master) | head -n 1)
+    fi
+    volumeBar=""
+    volume_stripped=$(echo "$volume"|sed 's/%//')
+    for jump in {1..100..10}
+    do
+	if [[ $volume_stripped != "--" ]]; then
+		if (( $volume_stripped > $jump)); then     
+			volumeBar="$volumeBar━"
+		else
+			volumeBar="$volumeBar─"
+	    	fi
+        else
+        volumeBar="$volmeBar "
+	fi
+    done
+    echo "%{A1:~/.config/polybar/scripts/volume --mute:}$icon%{A} %{A1:exec pavucontrol:}$volume%{A} $volumeBar"
+}
+
+listen() {
+    volume_print
+
+    pactl subscribe | while read -r event; do
+        if echo "$event" | grep -qv "Client"; then
+            volume_print
+        fi
+    done
+}
+
+case "$1" in
+    --up)
+        volume_up
+        ;;
+    --down)
+        volume_down
+        ;;
+    --mute)
+        volume_mute
+        ;;
+    *)
+        listen
+        ;;
+esac

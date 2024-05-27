@@ -1,0 +1,11 @@
+[Trigger]
+Operation = Install
+Operation = Upgrade
+Operation = Remove
+Type = Package
+Target = *
+
+[Action]
+Description = Call Polybar's MSG command, to update package counter
+When = PostTransaction
+Exec = /home/jamesp/.config/polybar/scripts/paru-updates --supdate

@@ -1,0 +1,50 @@
+# /usr/bin/python
+
+from huawei_lte_api.Client import Client
+from huawei_lte_api.Connection import Connection
+from requests.exceptions import ConnectionError
+Huawei_URL = 'http://192.168.8.1/'
+
+Signal_Strength_icons = ['󰢿' ,'󰢼', '󰢽', '󰢾', 
+'󰒢']
+
+def signal_strength(signal_icon_index: int):
+    # Signal icon index is a number from 0 to 5
+    # 0 - no signal
+    # 1 - weak signal
+    # 2 - medium signal
+    # 3 - strong signal
+    # 4 - very strong signal
+    # 5 - full signal
+    # Signal_Strength_icons are 4 icons from Material Design Icons font
+    # 󰢿 - no signal
+    # 󰢼 - weak signal
+    # 󰢽 - medium signal
+    # 󰢾 - strong signal
+
+    # Translate signal icon index to signal strength icon
+    if signal_icon_index <= 1:
+        return Signal_Strength_icons[signal_icon_index]
+    elif signal_icon_index > 2:
+        return Signal_Strength_icons[signal_icon_index - 1]
+    else:
+        return Signal_Strength_icons[1]
+
+
+Connection_mode_icons = {"LTE": "󰜔", "WCDMA": "󰜓", "GSM": "" }
+
+
+try:
+    with Connection(Huawei_URL, timeout=1, username="admin", password="Goodlife1") as connection:
+        # This just simplifies access to separate API groups, you can use device = Device(connection) if you want
+        client = Client(connection)
+        # print(client.device.information())  # Can be accessed without authorization
+        status = client.monitoring.status()
+        info = client.device.information()
+        print("%{F#F0C674}", end="")
+        print(
+            f"{signal_strength(int(status['SignalIcon']))} {Connection_mode_icons[info['workmode']]}", end="")
+        print("%{F-} ", end="")
+        print(f"{info['WanIPAddress']}")
+except ConnectionError:
+    print("")
