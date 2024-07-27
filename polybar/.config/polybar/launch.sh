@@ -28,6 +28,12 @@ elif [ "$setup" = "homeSetup-usb-1" ]; then
 elif [ "$setup" = "mobile" ]; then
     echo "Using laptop bar"
     polybar laptop 2>&1 | tee -a /tmp/polybar1.log & disown
+elif [ "$setup" = "workSetup" ]; then
+    echo "Using WorkSetup"
+    MONITORL="DP-1-2.1"
+    MONITORR="DP-1-2.2"
+    polybar dualmonitorL 2>&1 | tee -a /tmp/polybar1.log & disown
+    polybar dualmonitorR 2>&1 | tee -a /tmp/polybar2.log & disown
 else
     echo "error finding setup, using laptop bar"
     polybar laptop 2>&1 | tee -a /tmp/polybar1.log & disown
