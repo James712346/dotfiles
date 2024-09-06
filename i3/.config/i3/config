@@ -261,20 +261,20 @@ bindsym $mod+p move workspace to output next
 # We use variables to avoid repeating the names in multiple places.
 set $ws1 "1:"
 set $ws2 "2:"
-set $ws3 "3:"
+set $ws3 "3:󰭣"
 set $ws4 "4:"
 set $ws5 "5:"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
+set $ws6 "6:󰏉"
+set $ws7 "7:󰏓"
+set $ws8 "8:󰺟"
+set $ws9 "9:󱤓"
 set $ws10 "10:"
 set $ws11 "11:"
 set $ws12 "12:²"
 set $ws13 "13: ²"
-set $ws14 "14:󰏓"
-set $ws15 "15:󰺟"
-set $ws16 "16:󱤓"
+set $ws14 "14"
+set $ws15 "15"
+set $ws16 "16"
 set $ws17 "17"
 set $ws18 "18"
 set $ws19 "19"
@@ -283,15 +283,19 @@ set $ws20 "20"
 # bind program to workspace and focus to them on startup:
 assign [class="kitty"] $ws1
 assign [class="(?i)firefox"] $ws2
-assign [class="Code"] $ws3
+assign [class="Atril"] $ws3
 assign [class="datagrip"] $ws4
 assign [class="Thunar"] $ws5
+assign [class="xviix64.exe"] $ws6
+assign [class="CoppeliaSim"] $ws6
+assign [class="LibrePCB" title="(?i) - LibrePCB Schematic Editor"] $ws8
+assign [class="LibrePCB" title="(?i) - LibrePCB Board Editor"] $ws9
+assign [class="LibrePCB" title="Control Panel - LibrePCB 1\.1\.0"] $ws7
+assign [class="kicad" title="(?i) — KiCad (?i)"] $ws7
+assign [class="kicad" title="(?i) - Schematic Editor"] $ws8
 assign [class="discord"] $ws11
 assign [class="zoom"] $ws11
-assign [class="LibrePCB" title="(?i) - LibrePCB Schematic Editor"] $ws15
-assign [class="LibrePCB" title="(?i) - LibrePCB Board Editor"] $ws16
-assign [class="LibrePCB" title="Control Panel - LibrePCB 1\.1\.0"] $ws14
-
+assign [class="Microsoft Teams - Preview"] $ws11
 # automatic set focus new window if it opens on another workspace than the current:
 for_window [class=kitty] focus
 for_window [class=(?i)firefox] focus
@@ -310,7 +314,7 @@ exec --no-startup-id dex --autostart --environment i3
 
 # set wallpaper
 # exec --no-startup-id sleep 2 && nitrogen --restore
-exec --no-startup-id sleep 1 && feh --bg-fill /usr/share/endeavouros/backgrounds/endeavouros-wallpaper.png
+exec --no-startup-id sleep 1 && feh --bg-fill ~/.config/wallpaper/1.jpg
 
 # set powersavings for display:
 exec --no-startup-id xset s 480 dpms 600 600 600

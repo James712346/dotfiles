@@ -9,7 +9,7 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-	ensure_installed = {'rust_analyzer', 'bashls', 'lua_ls', 'clangd', 'tsserver', 'texlab', 'matlab_ls', 'ruff', 'zls'},
+	ensure_installed = {'rust_analyzer', 'bashls', 'lua_ls', 'clangd', 'tsserver', 'texlab', 'matlab_ls', 'pyright', 'zls'},
 	handlers = {
 		function(server_name)
 			require('lspconfig')[server_name].setup({})

@@ -20,6 +20,12 @@ return require('packer').startup(function(use)
 	  -- or                            , branch = '0.1.x',
 	  requires = { {'nvim-lua/plenary.nvim'} }
   }
+
+  use({
+      'glepnir/galaxyline.nvim',
+      branch = 'main',
+      requires = { 'nvim-tree/nvim-web-devicons', opt = true },
+  })
   -- LSP
   -- These nuts haha
   -- though for real, I'm using Zero LSP
@@ -35,4 +41,15 @@ return require('packer').startup(function(use)
 		  {'L3MON4D3/LuaSnip'},
 	  }
   }
+
+  use {"akinsho/toggleterm.nvim", tag = '*', config = function()
+    require("toggleterm").setup()
+  end}
+
+  use {"CopilotC-Nvim/CopilotChat.nvim" , tag = '*'}
+
+  use {"lervag/vimtex", tag = '*', config = function()
+    -- VimTeX configuration goes here, e.g.
+    vim.g.vimtex_view_method = "zathura"
+  end}
 end)
