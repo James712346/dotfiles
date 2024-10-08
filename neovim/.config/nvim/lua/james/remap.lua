@@ -14,17 +14,18 @@
 ]]
 
 -- Map <leader>pv to open the Ex command-line mode in normal mode
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
+vim.keymap.set("n", "<leader>pv", vim.cmd.Oil)
 
 -- Map <leader>to to toggle the terminal in normal mode
 vim.keymap.set("n", "<leader>to", vim.cmd.ToggleTerm)
-
--- Map <leader>pv to open the Ex command-line mode in normal mode
-vim.keymap.set("n", "<leader>pv", vim.cmd.Ex)
 
 -- Terminal Maps
 -- Map <leader>to to toggle the terminal in normal mode
 vim.keymap.set("n", "<leader>to", vim.cmd.ToggleTerm)
+
+-- Error Messages
+vim.keymap.set("n", "]g", vim.diagnostic.goto_next)
+vim.keymap.set("n", "[g", vim.diagnostic.goto_prev)
 
 -- Copilot Maps
 -- Map <leader>Cod to generate docs from copilot
@@ -35,3 +36,6 @@ vim.keymap.set("n", "<leader>Coe", vim.cmd.CopilotChatDocs)
 
 -- Copilot Chat Commit
 vim.keymap.set("n", "<leader>Coc", vim.cmd.CopilotChatCommitStaged)
+
+-- Doge Doc Generate
+vim.keymap.set('n', '<Leader>c', '<Plug>(doge-generate)')

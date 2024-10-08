@@ -9,14 +9,30 @@ end)
 
 require('mason').setup({})
 require('mason-lspconfig').setup({
-	ensure_installed = {'rust_analyzer', 'bashls', 'lua_ls', 'clangd', 'tsserver', 'texlab', 'matlab_ls', 'pyright', 'zls'},
+    -- Default Parameters
+	ensure_installed = {'rust_analyzer', 'bashls', 'lua_ls', 'clangd', 'ts_ls', 'texlab', 'matlab_ls', 'pyright', 'zls'},
 	handlers = {
 		function(server_name)
 			require('lspconfig')[server_name].setup({})
 		end,
-	}
-})
+	},
+    -- clangd Config
+    clangd = function ()
+    lspconfig.clangd.setup {
+        on_attach = on_attach, 
+        flags = {
+            debounce_text_changes = 150,
+        },
+        cmd = {
+            "clangd",
+            "--clang-tidy",
+            "--compile-commands-dir=build", -- Adjust according to your project structure
+            "--enable-config",               -- Use .clangd config file if present
+        },
+    }
+    end,
 
+})
 
 cmp.setup({
   sources = {
@@ -48,3 +64,5 @@ cmp.setup({
     end,
   },
 })
+
+
