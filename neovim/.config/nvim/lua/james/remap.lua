@@ -39,3 +39,4 @@ vim.keymap.set("n", "<leader>Coc", vim.cmd.CopilotChatCommitStaged)
 
 -- Doge Doc Generate
 vim.keymap.set('n', '<Leader>c', '<Plug>(doge-generate)')
+

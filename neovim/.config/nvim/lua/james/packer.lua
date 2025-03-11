@@ -6,6 +6,8 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
     -- Packer can manage itself
     use 'wbthomason/packer.nvim'
+
+    use 'mfussenegger/nvim-dap'
     use 'neanias/everforest-nvim'
     use 'mbbill/undotree'
     use 'tpope/vim-fugitive'
@@ -14,11 +16,18 @@ return require('packer').startup(function(use)
         run = ':TSUpdate'
     }
 
+    use {
+        'chipsenkbeil/distant.nvim',
+        branch = 'v0.3',
+        config = function()
+            require('distant'):setup()
+        end
+    }
 
     use {
         'nvim-telescope/telescope.nvim', tag = '0.1.x',
         -- or                            , branch = '0.1.x',
-        requires = { {'nvim-lua/plenary.nvim'} }
+        requires = { { 'nvim-lua/plenary.nvim' } }
     }
 
     use({
@@ -33,30 +42,30 @@ return require('packer').startup(function(use)
         'VonHeikemen/lsp-zero.nvim',
         branch = 'v3.x',
         requires = {
-            {'williamboman/mason.nvim'},
-            {'williamboman/mason-lspconfig.nvim'},
-            {'neovim/nvim-lspconfig'},
-            {'hrsh7th/nvim-cmp'},
-            {'hrsh7th/cmp-nvim-lsp'},
-            {'L3MON4D3/LuaSnip'},
+            { 'williamboman/mason.nvim' },
+            { 'williamboman/mason-lspconfig.nvim' },
+            { 'neovim/nvim-lspconfig' },
+            { 'hrsh7th/nvim-cmp' },
+            { 'hrsh7th/cmp-nvim-lsp' },
+            { 'L3MON4D3/LuaSnip' },
         }
     }
 
-    use {"akinsho/toggleterm.nvim", tag = '*', config = function()
+    use { "akinsho/toggleterm.nvim", tag = '*', config = function()
         require("toggleterm").setup()
-    end}
+    end }
 
-    use {"CopilotC-Nvim/CopilotChat.nvim" , tag = '*'}
+    use { "CopilotC-Nvim/CopilotChat.nvim", tag = '*' }
 
-    use {"lervag/vimtex", tag = '*', config = function()
+    use { "lervag/vimtex", tag = '*', config = function()
         -- VimTeX configuration goes here, e.g.
         vim.g.vimtex_view_method = "zathura"
-    end}
+    end }
 
     use({
-            "stevearc/oil.nvim",
-            config = function()
-            end,
+        "stevearc/oil.nvim",
+        config = function()
+        end,
     })
     package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?/init.lua"
     package.path = package.path .. ";" .. vim.fn.expand("$HOME") .. "/.luarocks/share/lua/5.1/?.lua"
@@ -64,7 +73,7 @@ return require('packer').startup(function(use)
 
     use {
         "3rd/image.nvim", config = function()
-    end}
+    end }
 
     use {
         'kkoomen/vim-doge',
@@ -73,9 +82,22 @@ return require('packer').startup(function(use)
     use {
         'anurag3301/nvim-platformio.lua',
         requires = {
-            {'akinsho/nvim-toggleterm.lua'},
-            {'nvim-telescope/telescope.nvim'},
-            {'nvim-lua/plenary.nvim'},
+            { 'akinsho/nvim-toggleterm.lua' },
+            { 'nvim-telescope/telescope.nvim' },
+            { 'nvim-lua/plenary.nvim' },
         }
     }
+
+    use({ "iamcco/markdown-preview.nvim", run = "cd app && npm install", setup = function() vim.g.mkdp_filetypes = {
+            "markdown" } end, ft = { "markdown" }, })
+
+    use {
+        "MIBismuth/matlab.nvim",
+        config = function()
+            require('matlab').setup({
+                matlab_dir = "/home/jamesp/extra/matlab/bin/matlab"
+            })
+        end
+    }
+
 end)
