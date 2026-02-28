@@ -32,6 +32,7 @@ require('mason-lspconfig').setup({
     }
     end,
 
+    require("lspconfig").matlab_ls.setup{}
 })
 
 cmp.setup({
@@ -65,4 +66,6 @@ cmp.setup({
   },
 })
 
-
+require('platformio').setup({
+    lsp = "clangd"
+})

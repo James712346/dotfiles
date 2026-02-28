@@ -1,8 +1,7 @@
 #!/bin/sh
-
 if [[ $1 == "--get" ]]; then
-	profile=$(asusctl profile -p | sed -n "s/^.*\s//p")
-	if [[ $profile == "Performance" ]];then
+    profile=$(asusctl profile get | sed '/^$/d' | sed -n "1s/^.*\s//p")
+    if [[ $profile == "Performance" ]];then
 		echo ""
 	elif [[ $profile == "Quiet" ]];then
 		echo ""
@@ -10,6 +9,6 @@ if [[ $1 == "--get" ]]; then
 		echo ""
 	fi
 else 	
-	asusctl profile -n
+    asusctl profile next
 	polybar-msg action "#profile.hook.0"
 fi

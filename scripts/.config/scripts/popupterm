@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+CMD="${1:-bluetui}"
+
+# Launch Ghostty in background
+ghostty --title="$CMD Popup-terminal" --class="poptty" --x11-instance-name="poptty" --window-height=320 --window-width=400 -e "$CMD" &
+
+TERMPID=$!
+sleep 1
+
+
+while kill -0 $TERMPID 2>/dev/null; do
+    sleep 1
+    FOCUSED=$(xdotool getwindowfocus getwindowpid 2>/dev/null)
+    if [[ "$FOCUSED" != "$TERMPID" ]]; then
+        kill $TERMPID
+        exit
+    fi
+done
+

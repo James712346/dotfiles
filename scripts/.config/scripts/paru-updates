@@ -4,7 +4,7 @@ show(){
     if ! updates_arch=$(checkupdates 2> /dev/null | wc -l ); then
         updates_arch=0
     fi
-    if ! updates_aur=$(paru -Qum 2> /dev/null | wc -l); then
+    if ! updates_aur=$(paru -Qu 2> /dev/null | wc -l); then
         updates_aur=0
     fi
 
@@ -21,7 +21,7 @@ update(){
     echo "sending command to polybar"
 }
 supdate(){
-   echo "sending command to polybar"
+   cat /home/jamesp/.config/scripts/message.txt
    machinectl -q shell "james@" /usr/bin/bash -c 'polybar-msg action "#paru.hook.0"'&
 }
 

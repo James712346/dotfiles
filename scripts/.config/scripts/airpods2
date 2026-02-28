@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+
+# ------------------------------
+# Configuration
+# ------------------------------
+UPDATE_DURATION=1
+MIN_RSSI=-60
+AIRPODS_MANUFACTURER=76
+AIRPODS_DATA_LENGTH=54
+RECENT_BEACONS_MAX_T_NS=$((10*1000000000))  # 10 seconds in ns
+
+OUTPUT_FILE="$1"
+declare -A RECENT_BEACONS
+
+# ------------------------------
+# Convert RSSI to integer
+# ------------------------------
+parse_rssi() {
+    local rssi="$1"
+    rssi="${rssi//[^0-9-]/}"
+    echo "$rssi"
+}
+
+
+
+# ------------------------------
+# Scan for BLE devices using bluetoothctl
+# ------------------------------
+function scan_devices() {
+    # Start scan in background
+    bluetoothctl --timeout 5 scan on | grep -E "Device"
+}
+
+# ------------------------------
+# Extract AirPods manufacturer data
+# ------------------------------
+function extract_airpods_data() {
+    local MAC="$1"
+    # Use bluetoothctl info + optional parsing of manufacturer data
+    # This part is tricky in Bash, as manufacturer_data isn't printed directly
+    # We'll use `bluetoothctl info <MAC>` to get RSSI
+    RSSI=$(bluetoothctl info "$MAC" | grep "RSSI" | awk '{print $2}')
+    echo "$RSSI"
+}
+
+# ------------------------------
+# Main loop
+# ------------------------------
+while true; do
+    while read -r line; do
+        # Example line: Device XX:XX:XX:XX:XX:XX Name
+        MAC=$(echo "$line" | awk '{print $2}')
+        NAME=$(echo "$line" | cut -d ' ' -f3-)
+
+        RSSI=$(extract_airpods_data "$MAC")
+        RSSI=$(parse_rssi "$RSSI")
+
+        if [[ $RSSI -ge $MIN_RSSI ]]; then
+            # Placeholder: manufacturer data check
+            # In Bash, full manufacturer data parsing is complicated
+            
+DATA_HEX="TODO"
+JSON=$(jq -n --arg mac "$MAC" --arg name "$NAME" --arg rssi "$RSSI" --arg raw "$DATA_HEX" \
+    '{status:1, address:$mac, name:$name, rssi:($rssi|tonumber), raw:$raw}')
+            if [[ -n "$OUTPUT_FILE" ]]; then
+                echo "$JSON" >> "$OUTPUT_FILE"
+            else
+                echo "$JSON"
+            fi
+        fi
+
+    done < <(scan_devices)
+
+    sleep $UPDATE_DURATION
+done
+

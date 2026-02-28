@@ -4,6 +4,44 @@ update_sink() {
     sink=$(pactl info | awk -F : '/Default Sink:/{print $2}')
 }
 
+get_brightness() {
+    brightnessctl | grep -Po '[0-9]{1,3}(?=%)' | head -n 3 | tail -n 1
+}
+
+get_brightness_percent() {
+    brightnessctl | grep -Po '[0-9]{1,3}(?=%)' | head -n 1
+}
+
+brightness_up() {
+    brightnessctl set +5%
+    show_brightness
+}
+
+brightness_down() {
+    brightnessctl set 5%-
+    show_brightness
+}
+
+show_brightness() {
+    echo "brightness" > /tmp/polybar_display_mode
+
+    if [ -f /tmp/polybar_sleep_pid ]; then
+        oldpid=$(cat /tmp/polybar_sleep_pid)
+        if kill -0 "$oldpid" 2>/dev/null; then
+            kill "$oldpid" 2>/dev/null
+        fi
+    fi
+
+    (
+        sleep 1.5
+        rm -f /tmp/polybar_display_mode
+        rm -f /tmp/polybar_sleep_pid
+    ) &
+    echo $! > /tmp/polybar_sleep_pid
+
+    volume_print
+}
+
 volume_up() {
     update_sink
     muted=$(amixer get Master | tail -2 | grep -c '\[on\]')
@@ -32,7 +70,21 @@ volume_mute() {
 
 volume_print() {
     update_sink
-
+    if [ -f /tmp/polybar_display_mode ]; then
+        # brightness mode
+        percent=$(get_brightness_percent)
+        icon="%{F#F0C674}%{F-}"  # sun icon
+        bar=""
+        for jump in {1..100..10}; do
+            if (( percent > jump)); then     
+                bar="$bar━"
+            else
+                bar="$bar─"
+            fi
+        done
+        echo "$icon $percent% $bar"
+        return
+    fi
     active_port=$(pactl list sinks)
     if echo "$active_port" | grep "Active Port:"| grep -q "headphone"; then
         icon="%{F#F0C674}%{F-}"
@@ -43,27 +95,54 @@ volume_print() {
     fi
 
     muted=$(amixer get Master | tail -2 | grep -c '\[on\]')
+    volume_second=0
 
-    if [ $muted -eq 0 ]; then
-	    icon=""
-	    volume="--%"
+    if [ "$muted" -eq 0 ]; then
+        icon=""
+        volume="--%"
     else
-	    volume=$(awk -F"[][]" '/Left:/ { print $2 }' <(amixer sget Master) | head -n 1)
-    fi
-    volumeBar=""
-    volume_stripped=$(echo "$volume"|sed 's/%//')
-    for jump in {1..100..10}
-    do
-	if [[ $volume_stripped != "--" ]]; then
-		if (( $volume_stripped > $jump)); then     
-			volumeBar="$volumeBar━"
-		else
-			volumeBar="$volumeBar─"
-	    	fi
+        mapfile -t volumes < <(amixer sget Master | grep -Po '[0-9]{1,3}(?=%)')
+
+        volume_stripped=${volumes[0]}
+        volume_second=0
+        secondaryColor=""
+
+        if [ "${#volumes[@]}" -gt 1 ] && [ "${volumes[0]}" != "${volumes[1]}" ]; then
+            if (( volumes[0] < volumes[1] )); then
+                volume_stripped=${volumes[1]}
+                volume_second=${volumes[0]}
+                secondaryColor="268BD2"  # blue
+                volume="%{F#$secondaryColor}L${volumes[0]}%%{F-} R${volumes[1]}%"
+            else
+                volume_stripped=${volumes[0]}
+                volume_second=${volumes[1]}
+                secondaryColor="859900"  # green
+                volume="L${volumes[0]}% %{F#$secondaryColor}R${volumes[1]}%%{F-}"
+            fi
         else
-        volumeBar="$volmeBar "
-	fi
+            volume_second=0
+            volume="${volumes[0]}%"
+        fi
+    fi
+
+    # build volume bar
+    volumeBar=""
+    for jump in {1..100..10}; do
+        if [[ $volume_stripped != "--" ]]; then
+            if (( volume_stripped > jump )); then
+                if (( volume_second != 0 )) && (( volume_second > jump )); then
+                    volumeBar="$volumeBar%{F#$secondaryColor}━%{F-}"
+                else
+                    volumeBar="$volumeBar━"
+                fi
+            else
+                volumeBar="$volumeBar─"
+            fi
+        else
+            volumeBar="$volumeBar "
+        fi
     done
+
     echo "%{A1:~/.config/polybar/scripts/volume --mute:}$icon%{A} %{A1:exec pavucontrol:}$volume%{A} $volumeBar"
 }
 
@@ -86,6 +165,12 @@ case "$1" in
         ;;
     --mute)
         volume_mute
+        ;;
+    --bright-up)
+        brightness_up
+        ;;
+    --bright-down)
+        brightness_down
         ;;
     *)
         listen

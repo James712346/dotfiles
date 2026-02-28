@@ -6,7 +6,10 @@ vim.cmd [[packadd packer.nvim]]
 return require('packer').startup(function(use)
     -- Packer can manage itself
     use 'wbthomason/packer.nvim'
-
+    use({
+        "aserowy/tmux.nvim",
+        config = function() return require("tmux").setup() end
+    })
     use 'mfussenegger/nvim-dap'
     use 'neanias/everforest-nvim'
     use 'mbbill/undotree'
@@ -55,11 +58,12 @@ return require('packer').startup(function(use)
         require("toggleterm").setup()
     end }
 
-    use { "CopilotC-Nvim/CopilotChat.nvim", tag = '*' }
+    --use { "CopilotC-Nvim/CopilotChat.nvim", tag = '*' }
 
     use { "lervag/vimtex", tag = '*', config = function()
         -- VimTeX configuration goes here, e.g.
         vim.g.vimtex_view_method = "zathura"
+        vim.g.vimtex_compiler_method = "xelatex"
     end }
 
     use({
@@ -92,12 +96,12 @@ return require('packer').startup(function(use)
             "markdown" } end, ft = { "markdown" }, })
 
     use {
-        "MIBismuth/matlab.nvim",
+        'idossha/matlab.nvim',
         config = function()
-            require('matlab').setup({
-                matlab_dir = "/home/jamesp/extra/matlab/bin/matlab"
-            })
+            require('matlab').setup()
         end
     }
 
+
+    use {'krady21/compiler-explorer.nvim'}
 end)

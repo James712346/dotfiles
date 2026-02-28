@@ -19,11 +19,11 @@ echo "Current setup: $setup"
 # If the current setup is "homeSetup-usb-1", then use the "superwide" bar
 if [ "$setup" = "homeSetup-usb-0" ]; then
     echo "Using superwide bar"
-    MONITOR=DP-1-2
+    MONITOR=DP-0
     polybar superwide 2>&1 | tee -a /tmp/polybar1.log & disown
 elif [ "$setup" = "homeSetup-usb-1" ]; then
     echo "Using superwide bar"
-    MONITOR=DP-1-0
+    MONITOR=DP-2
     polybar superwide 2>&1 | tee -a /tmp/polybar1.log & disown
 elif [ "$setup" = "mobile" ]; then
     echo "Using laptop bar"

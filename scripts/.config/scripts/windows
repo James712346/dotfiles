@@ -1,0 +1,74 @@
+#!/usr/bin/env bash
+
+dockerCompose="/home/jamesp/.config/winapps/docker-compose.yaml"
+dockerContainer="WinApps"
+
+# Get container state
+rawState=$(docker compose -f "$dockerCompose" ps --all --format '{{.Status}}')
+
+state="OFF"
+time=""
+
+# Match patterns like "Up 9 minutes" or "Paused (XYZ)"
+if [[ $rawState =~ ^([A-Za-z]+)([[:space:]]\([0-9]+\))?[[:space:]]+([0-9]+[[:space:]][A-Za-z]+([[:space:]][A-Za-z]+)?)([[:space:]]\(([A-Za-z]+)\))? ]]; then
+    state="${BASH_REMATCH[1]}"
+    time="${BASH_REMATCH[3]}"
+    if [[ ${BASH_REMATCH[6]} == "Paused" ]]; then
+        state="Paused"
+    fi
+fi
+
+left() {
+    if [[ $state == "Paused" ]]; then
+        docker unpause "$dockerContainer"
+    elif [[ $state == "Up" ]]; then
+        docker pause "$dockerContainer"
+    else
+        docker compose -f "$dockerCompose" up -d
+    fi
+}
+
+right() {
+    if [[ $state == "Up" || $state == "Paused" ]]; then
+        docker compose -f "$dockerCompose" down
+    else
+        docker compose -f "$dockerCompose" up -d
+    fi
+}
+
+print_status() {
+    local icon=""
+    local color=""
+
+    case "$state" in
+        Up)
+            icon=""       # check-circle / running
+            color="%{F#F0C674}"
+            ;;
+        Paused)
+            icon=""       # pause icon
+            ;;
+        Exited|OFF)
+            icon=""       # stop / cross mark
+            color="%{F#928374}"  # red
+            ;;
+        *)
+            icon="?"       # question mark / unknown
+            color="%{F#F92672}"  # cyan
+            ;;
+    esac
+    echo "${color}${icon}%{F-}"
+}
+
+case "$1" in
+    --right)
+        right
+        ;;
+    --left)
+        left
+        ;;
+    *)
+        print_status
+        ;;
+esac
+

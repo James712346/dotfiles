@@ -22,4 +22,11 @@ vim.opt.incsearch = true
 
 vim.g.mapleader = " "
 
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+  pattern = "*.m",
+  callback = function()
+    vim.bo.syntax = "matlab"
+    vim.bo.filetype = "matlab"
+  end,
+})
 

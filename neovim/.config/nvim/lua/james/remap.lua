@@ -40,3 +40,8 @@ vim.keymap.set("n", "<leader>Coc", vim.cmd.CopilotChatCommitStaged)
 -- Doge Doc Generate
 vim.keymap.set('n', '<Leader>c', '<Plug>(doge-generate)')
 
+-- Window Movement, etc
+vim.keymap.set('n', '<Leader><Right>', function() vim.cmd('wincmd l') end)
+vim.keymap.set('n', '<Leader><Up>',    function() vim.cmd('wincmd k') end)
+vim.keymap.set('n', '<Leader><Down>',  function() vim.cmd('wincmd j') end)
+vim.keymap.set('n', '<Leader>v', vim.cmd.vsplit)

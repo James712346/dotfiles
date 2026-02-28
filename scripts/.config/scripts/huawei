@@ -35,7 +35,7 @@ Connection_mode_icons = {"LTE": "󰜔", "WCDMA": "󰜓", "GSM": "" }
 
 
 try:
-    with Connection(Huawei_URL, timeout=1, username="admin", password="Goodlife1") as connection:
+    with Connection(Huawei_URL, timeout=1, username="admin", password="admin") as connection:
         # This just simplifies access to separate API groups, you can use device = Device(connection) if you want
         client = Client(connection)
         # print(client.device.information())  # Can be accessed without authorization
